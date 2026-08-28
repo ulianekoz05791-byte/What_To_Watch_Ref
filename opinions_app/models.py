@@ -1,5 +1,5 @@
 from datetime import datetime
-from opinions_app import db
+from .extensions import db
 
 
 class Opinion(db.Model):
