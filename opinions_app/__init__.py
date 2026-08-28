@@ -1,22 +1,13 @@
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from settings import Config
-from .extensions import db
 
-migrate = Migrate()
+app = Flask(__name__)
+app.config.from_object(Config)
 
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
-def create_app():
-    app = Flask(__name__)
-    app.config.from_object(Config)
-
-    db.init_app(app)
-    migrate.init_app(app, db)
-
-    # Импорты после создания app
-    from . import views, error_handlers, cli_commands
-    
-    # Регистрируем blueprint
-    app.register_blueprint(views.bp)
-
-    return app
+# Импорты в конце, чтобы избежать циклических зависимостей
+from opinions_app import models, forms, views, error_handlers, cli_commands

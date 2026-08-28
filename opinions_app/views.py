@@ -1,13 +1,11 @@
 from random import randrange
-from flask import redirect, render_template, url_for, abort, flash, Blueprint
+from flask import redirect, render_template, url_for, abort, flash
+from opinions_app import app, db
 from opinions_app.models import Opinion
 from opinions_app.forms import OpinionForm
-from opinions_app.extensions import db
-
-bp = Blueprint('opinions', __name__)
 
 
-@bp.route('/')
+@app.route('/')
 def index_view():
     quantity = Opinion.query.count()
     if not quantity:
@@ -17,7 +15,7 @@ def index_view():
     return render_template('opinion.html', opinion=opinion)
 
 
-@bp.route('/add', methods=['GET', 'POST'])
+@app.route('/add', methods=['GET', 'POST'])
 def add_opinion_view():
     form = OpinionForm()
     if form.validate_on_submit():
@@ -32,11 +30,11 @@ def add_opinion_view():
         )
         db.session.add(opinion)
         db.session.commit()
-        return redirect(url_for('opinions.opinion_view', id=opinion.id))
+        return redirect(url_for('opinion_view', id=opinion.id))
     return render_template('add_opinion.html', form=form)
 
 
-@bp.route('/opinion/<int:id>')
+@app.route('/opinion/<int:id>')
 def opinion_view(id):
     opinion = Opinion.query.get_or_404(id)
     return render_template('opinion.html', opinion=opinion)
